@@ -14,7 +14,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] =os.getenv('SECRET_KEY') 
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+# Get the URL from environment variables
+db_url = os.getenv('DATABASE_URL')
+
+# Fix for Render/Supabase: SQLAlchemy requires 'postgresql://' not 'postgres://'
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
